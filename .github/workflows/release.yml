@@ -1,0 +1,78 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          TAG_NAME="${{ github.ref }}"
+          VERSION=${TAG_NAME#refs/tags/}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Release version: ${VERSION}"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          cat > CHANGELOG_ENTRY.md << 'EOF'
+          ## ${{ steps.extract_version.outputs.version }}
+          
+          ### Released: ${{ github.event.head_commit.timestamp || 'N/A' }}
+          
+          ### What's New
+          - Reusable security scan workflow
+          - Support for custom scan targets
+          - Artifact upload for scan reports
+          - Output interfaces for workflow orchestration
+          
+          ### Usage
+          
+          ```yaml
+          jobs:
+            security:
+              uses: renan-org/shared-security-scan/.github/workflows/security-scan.yml@${{ steps.extract_version.outputs.version }}
+              with:
+                scan-target: '.'
+                upload-artifact: true
+          ```
+          
+          ### Outputs
+          - `scan-result`: Status of the security scan (passed/warning)
+          - `scan-timestamp`: When the scan was performed
+          
+          EOF
+          cat CHANGELOG_ENTRY.md
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.extract_version.outputs.version }}
+          release_name: Release ${{ steps.extract_version.outputs.version }}
+          body_path: CHANGELOG_ENTRY.md
+          draft: false
+          prerelease: false
+
+      - name: Upload workflow as release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./.github/workflows/security-scan.yml
+          asset_name: security-scan.yml
+          asset_content_type: application/x-yaml

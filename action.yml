@@ -1,0 +1,35 @@
+name: 'Security Scan'
+description: 'Reusable workflow for security scanning'
+author: 'renan-org'
+
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  scan-target:
+    description: 'Target to scan (e.g., . for current repo)'
+    required: false
+    default: '.'
+
+  upload-artifact:
+    description: 'Upload scan results as artifact'
+    required: false
+    default: 'true'
+
+outputs:
+  scan-result:
+    description: 'Security scan result status'
+    value: ${{ steps.scan.outputs.result }}
+
+  scan-timestamp:
+    description: 'Timestamp when scan was performed'
+    value: ${{ steps.scan.outputs.timestamp }}
+
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        echo "This is a workflow-only action. Use as a reusable workflow, not a composite action."
+        echo "Reference: ./.github/workflows/security-scan.yml"
+      shell: bash

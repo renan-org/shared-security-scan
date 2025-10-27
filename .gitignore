@@ -6,6 +6,10 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# Security scan artifacts
+security-scan-report.txt
+CHANGELOG_ENTRY.md
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 

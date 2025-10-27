@@ -1,0 +1,37 @@
+name: Security Scan with Output Handling
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  security-scan:
+    uses: renan-org/shared-security-scan/.github/workflows/security-scan.yml@v1.0.0
+    with:
+      scan-target: '.'
+      upload-artifact: true
+
+  handle-results:
+    needs: security-scan
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Scan Results
+        run: |
+          echo "🔍 Security Scan Completed"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Status: ${{ needs.security-scan.outputs.scan-result }}"
+          echo "Timestamp: ${{ needs.security-scan.outputs.scan-timestamp }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Fail on security warnings
+        if: needs.security-scan.outputs.scan-result == 'warning'
+        run: |
+          echo "⚠️  Security issues detected!"
+          exit 1
+
+      - name: Success
+        if: needs.security-scan.outputs.scan-result == 'passed'
+        run: echo "✅ All security checks passed!"

@@ -1,0 +1,47 @@
+version: 2
+
+updates:
+  # Keep GitHub Actions (including reusable workflows) up to date
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    reviewers:
+      - "your-team"
+    assignees:
+      - "your-username-here"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "workflow-updates"
+    commit-message:
+      prefix: "chore(deps): "
+      include: "scope"
+    pull-request-branch-name:
+      separator: "/"
+    # Auto-merge minor and patch updates for workflows
+    auto-merge:
+      enabled: true
+      rules:
+        - update-types:
+            - "minor"
+            - "patch"
+          automerge-strategy: "auto"
+    # Allow up to 5 open PRs for workflow updates
+    open-pull-requests-limit: 5
+
+  # Optional: Keep npm/pip/other dependencies up to date
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "chore(deps): "
+      include: "scope"

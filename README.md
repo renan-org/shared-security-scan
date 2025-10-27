@@ -34,6 +34,13 @@ jobs:
       upload-artifact: true
 ```
 
+### Getting Started Quickly
+
+For quick setup in your repository, see:
+
+- **[CONSUMER_SETUP.md](CONSUMER_SETUP.md)** - Complete setup guide with Dependabot configuration
+- **[examples/](examples/)** - Ready-to-copy workflow and Dependabot configurations
+
 ### Using Specific Versions
 
 To ensure reproducibility, always reference a specific version tag:
